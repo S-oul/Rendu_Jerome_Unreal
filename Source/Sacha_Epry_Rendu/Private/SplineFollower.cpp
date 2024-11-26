@@ -42,8 +42,7 @@ void USplineFollower::MoveActorToSplinePosition()
 
 void USplineFollower::RotateActorTowardDirection()
 {
-	FRotator CurrentRotation = OwnerActor->GetActorRotation();
-
+	///horrible code a refactor;
 	FVector ForwardDir = Spline->GetLocationAtDistanceAlongSpline(AdvancementValue,ESplineCoordinateSpace::World) - Spline->GetLocationAtDistanceAlongSpline(AdvancementValue-1,ESplineCoordinateSpace::World);
 	FRotator NewRotation = FRotationMatrix::MakeFromX(ForwardDir).Rotator();
 	
