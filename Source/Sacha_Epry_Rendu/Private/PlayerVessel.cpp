@@ -39,8 +39,6 @@ APlayerVessel::APlayerVessel()
 	FColor::Red,
 	"no SPRINARM !"
 	);
-
-	
 }
 
 // Called when the game starts or when spawned
@@ -75,6 +73,8 @@ void APlayerVessel::SetupMappingContextIntoController() const
 	);
 		return;
 	}
+	PlayerController->Possess(this.);
+	PlayerController->SetViewTargetWithBlend(MainCamera->GetOwner(),0);
 
 	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
 	if (LocalPlayer == nullptr) {

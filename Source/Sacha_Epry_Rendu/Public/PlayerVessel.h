@@ -31,6 +31,7 @@ protected:
 
 #pragma region InputMappingContext 
 
+	
 	UPROPERTY(EditAnywhere)
 	UInputMappingContext* InputMappingContext;
 
