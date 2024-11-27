@@ -2,7 +2,9 @@
 
 
 #include "Sacha_Epry_Rendu/Public/PlayerVessel.h"
+#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameFramework/SpringArmComponent.h"
 
 
 // Sets default values
@@ -16,31 +18,75 @@ APlayerVessel::APlayerVessel()
 void APlayerVessel::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	MainCamera = Cast<UCameraComponent>(this->GetComponentByClass(UCameraComponent::StaticClass()));
+	if (MainCamera == nullptr) 	GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	10.f,
+	FColor::Red,
+	"no MAIN CAM !"
+	);
+
+	SpringArmComponent = Cast<USpringArmComponent>(this->GetComponentByClass(USpringArmComponent::StaticClass()));
+
+	if (SpringArmComponent == nullptr) 	GEngine->AddOnScreenDebugMessage
+(
+-1,
+10.f,
+FColor::Red,
+"no SPRINARM !"
+);
 }
+
 
 // Called every frame
 void APlayerVessel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
 
-// Called to bind functionality to input
-void APlayerVessel::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	//SetActorRotation(MainCamera->GetRelativeRotation());
 }
+#pragma region InputMappingContext
 
 void APlayerVessel::SetupMappingContextIntoController() const
 {
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController == nullptr) return;
+	if (PlayerController == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	10.f,
+	FColor::Red,
+	"no PlayerController !"
+	);
+		return;
+	}
 
 	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
-	if (LocalPlayer == nullptr) return;
+	if (LocalPlayer == nullptr) {
+		GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	10.f,
+	FColor::Red,
+	"no LocalPlayer !"
+	);
+		return;
+	}
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
-	if(Subsystem == nullptr) return;
+	if(Subsystem == nullptr) {
+		GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	10.f,
+	FColor::Red,
+	"no SubSystem!"
+	);
+		return;
+	}
 	
 	Subsystem->AddMappingContext(InputMappingContext,0);
 
@@ -51,6 +97,90 @@ void APlayerVessel::SetupMappingContextIntoController() const
 	FColor::Green,
 	"IMC SET !"
 	);
-
 }
+
+
+void APlayerVessel::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	SetupMappingContextIntoController();
+
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	if(PlayerController == nullptr) return;
+
+	ULocalPlayer* Player = PlayerController->GetLocalPlayer();
+	if(Player == nullptr) return;
+
+	UEnhancedInputLocalPlayerSubsystem* InputSystem = Player->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	if(InputSystem == nullptr) return;
+
+	InputSystem->AddMappingContext(InputMappingContext, 0);
+	
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if(EnhancedInputComponent == nullptr) return;
+	
+	BindInputMoveAxisAndActions(EnhancedInputComponent);
+}
+
+void APlayerVessel::BindInputMoveAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent)
+{
+	if(InputMappingContext == nullptr) return;
+	if(EnhancedInputComponent == nullptr) return;
+
+	if(MoveXInputAction)
+	{
+		EnhancedInputComponent->BindAction
+		(
+			MoveXInputAction,
+			ETriggerEvent::Triggered,
+			this,
+			&APlayerVessel::OnXMove
+		);
+	}
+	if(MoveYInputAction)
+	{
+		EnhancedInputComponent->BindAction
+		(
+			MoveYInputAction,
+			ETriggerEvent::Triggered,
+			this,
+			&APlayerVessel::OnYMove
+		);
+	}
+	
+}
+
+
+void APlayerVessel::OnXMove(const FInputActionValue& InputActionValue)
+{
+
+	float Movement = InputActionValue.Get<float>();
+
+	GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	2.1f,
+	FColor::Yellow,
+    FString::Printf(TEXT("X: %f"), Movement)
+	);
+	
+}
+
+void APlayerVessel::OnYMove(const FInputActionValue& InputActionValue)
+{
+	float Movement = InputActionValue.Get<float>();
+
+	GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	2.1f,
+	FColor::Yellow,
+	FString::Printf(TEXT("Y: %f"), Movement)
+	);
+	
+}
+
+#pragma endregion
+
+
 

@@ -18,6 +18,7 @@ class SACHA_EPRY_RENDU_API AStarFoxGameMode : public AGameModeBase
 public:
 	virtual void BeginPlay() override;
 
+	
 protected:
 	
 };

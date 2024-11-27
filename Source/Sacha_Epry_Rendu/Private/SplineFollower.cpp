@@ -27,6 +27,19 @@ void USplineFollower::BeginPlay()
 	InitDefaultSpline(MainSplineTag);
 }
 
+// Called every frame
+void USplineFollower::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	AddAdvancement(DeltaTime);
+	
+	MoveActorToSplinePosition();
+	RotateActorTowardDirection();
+
+	//SetCameraLocation();
+}
+
 void USplineFollower::AddAdvancement(float DeltaTime)
 {
 	AdvancementValue += DeltaTime * FollowSpeed;
@@ -44,7 +57,7 @@ void USplineFollower::MoveActorToSplinePosition()
 
 void USplineFollower::RotateActorTowardDirection()
 {
-	FVector ForwardDir = OwnerActor->GetActorLocation() - OldLocation;
+	FVector ForwardDir = OldLocation- OwnerActor->GetActorLocation();
 	ForwardDir.Normalize();
 	DirectionVector = ForwardDir;
 	
@@ -53,17 +66,19 @@ void USplineFollower::RotateActorTowardDirection()
 	OwnerActor->SetActorRotation(NewRotation);
 }
 
-
-// Called every frame
-void USplineFollower::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void USplineFollower::SetCameraLocation()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	AddAdvancement(DeltaTime);
+	MainCamera->SetWorldLocation(OwnerActor->GetActorLocation() - DirectionVector * CameraSetDistance);
+	MainCamera->SetWorldRotation(OwnerActor->GetActorRotation());
 	
-	MoveActorToSplinePosition();
-	RotateActorTowardDirection();
-}
+	GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	10.f,
+	FColor::Green,
+	FString::FromInt(MainCamera->GetRelativeLocation().X) 
+	 );
+} 
 
 void USplineFollower::InitDefaultSpline(const FString SplineTag)
 {
@@ -84,14 +99,28 @@ void USplineFollower::InitDefaultSpline(const FString SplineTag)
 	}
 
 	AdvancementMax = Spline->GetSplineLength();
-	
-	
-	GEngine->AddOnScreenDebugMessage
+
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "MainCamera", AllActor);
+	MainCamera = AllActor.Num() > 0 ? AllActor[0]->GetComponentByClass<UCameraComponent>() : nullptr;
+
+	if(MainCamera == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage
 		(
 		-1,
 		10.f,
-		FColor::Green,
-		Spline->GetName() + " " + FString::FromInt(AdvancementMax)
+		FColor::Red,
+		"No Camera Found !"
 		);
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	10.f,
+	FColor::Green,
+	Spline->GetName() + " " + FString::FromInt(AdvancementMax) + " \n" + MainCamera->GetName() 
+ 	);
 }
 

@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputMappingContext.h"
+#include "Camera/CameraComponent.h"
 
 #include "PlayerVessel.generated.h"
 
 UCLASS()
-class SACHA_EPRY_RENDU_API APlayerVessel : public ACharacter
+class SACHA_EPRY_RENDU_API APlayerVessel : public APawn
 {
 	GENERATED_BODY()
 
@@ -17,19 +18,51 @@ public:
 	// Sets default values for this character's properties
 	APlayerVessel();
 
+	virtual void Tick(float DeltaTime) override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+#pragma region InputMappingContext 
+
+	UPROPERTY(EditAnywhere)
 	UInputMappingContext* InputMappingContext;
 
+	UPROPERTY(EditAnywhere)
+	UInputAction* MoveXInputAction;
+	
+	UPROPERTY(EditAnywhere)
+	UInputAction* MoveYInputAction;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	void BindInputMoveAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent);
 	void SetupMappingContextIntoController() const;
+
+	void OnXMove(const FInputActionValue& InputActionValue);
+
+	void OnYMove(const FInputActionValue& InputActionValue);
+
+#pragma endregion
+
+#pragma region Vessel Movement
+
+public:
+	UPROPERTY(EditAnywhere)
+	float MovementSpeed;
+	
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* MainCamera;
+
+	UPROPERTY(EditAnywhere)
+	USpringArmComponent* SpringArmComponent;
+
+	//may change later
+	FVector2D MaxXYDistance;
+
+
+#pragma endregion
 };
