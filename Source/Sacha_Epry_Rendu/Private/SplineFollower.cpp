@@ -66,19 +66,19 @@ void USplineFollower::RotateActorTowardDirection()
 	OwnerActor->SetActorRotation(NewRotation);
 }
 
-void USplineFollower::SetCameraLocation()
-{
-	MainCamera->SetWorldLocation(OwnerActor->GetActorLocation() - DirectionVector * CameraSetDistance);
-	MainCamera->SetWorldRotation(OwnerActor->GetActorRotation());
-	
-	GEngine->AddOnScreenDebugMessage
-	(
-	-1,
-	10.f,
-	FColor::Green,
-	FString::FromInt(MainCamera->GetRelativeLocation().X) 
-	 );
-} 
+//void USplineFollower::SetCameraLocation()
+//{
+//	MainCamera->SetWorldLocation(OwnerActor->GetActorLocation() - DirectionVector * CameraSetDistance);
+//	MainCamera->SetWorldRotation(OwnerActor->GetActorRotation());
+//	
+//	GEngine->AddOnScreenDebugMessage
+//	(
+//	-1,
+//	10.f,
+//	FColor::Green,
+//	FString::FromInt(MainCamera->GetRelativeLocation().X) 
+//	 );
+//} 
 
 void USplineFollower::InitDefaultSpline(const FString SplineTag)
 {

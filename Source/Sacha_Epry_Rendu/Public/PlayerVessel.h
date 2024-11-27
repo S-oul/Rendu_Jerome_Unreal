@@ -3,11 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
 #include "InputMappingContext.h"
+#include "InputAction.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputActionValue.h"
+#include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 #include "PlayerVessel.generated.h"
+
 
 UCLASS()
 class SACHA_EPRY_RENDU_API APlayerVessel : public APawn

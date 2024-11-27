@@ -4,6 +4,7 @@
 #include "Sacha_Epry_Rendu/Public/PlayerVessel.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 
@@ -18,6 +19,10 @@ APlayerVessel::APlayerVessel()
 void APlayerVessel::BeginPlay()
 {
 	Super::BeginPlay();
+	//INIT
+	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCameraaaaaaaaaaaa"));
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringaaaaaaaaaaaaArm"));
+
 	MainCamera = Cast<UCameraComponent>(this->GetComponentByClass(UCameraComponent::StaticClass()));
 	if (MainCamera == nullptr) 	GEngine->AddOnScreenDebugMessage
 	(
@@ -30,12 +35,12 @@ void APlayerVessel::BeginPlay()
 	SpringArmComponent = Cast<USpringArmComponent>(this->GetComponentByClass(USpringArmComponent::StaticClass()));
 
 	if (SpringArmComponent == nullptr) 	GEngine->AddOnScreenDebugMessage
-(
--1,
-10.f,
-FColor::Red,
-"no SPRINARM !"
-);
+	(
+	-1,
+	10.f,
+	FColor::Red,
+	"no SPRINARM !"
+	);
 }
 
 
