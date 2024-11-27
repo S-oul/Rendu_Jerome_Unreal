@@ -13,17 +13,16 @@ APlayerVessel::APlayerVessel()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-}
 
-// Called when the game starts or when spawned
-void APlayerVessel::BeginPlay()
-{
-	Super::BeginPlay();
 	//INIT
-	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCameraaaaaaaaaaaa"));
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringaaaaaaaaaaaaArm"));
+	// Create and initialize the spring arm
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArmComponent->SetupAttachment(RootComponent); // Attach to root
 
-	MainCamera = Cast<UCameraComponent>(this->GetComponentByClass(UCameraComponent::StaticClass()));
+	// Create and initialize the camera
+	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCamera"));
+	MainCamera->SetupAttachment(SpringArmComponent); // Attach to spring arm
+	
 	if (MainCamera == nullptr) 	GEngine->AddOnScreenDebugMessage
 	(
 	-1,
@@ -32,7 +31,6 @@ void APlayerVessel::BeginPlay()
 	"no MAIN CAM !"
 	);
 
-	SpringArmComponent = Cast<USpringArmComponent>(this->GetComponentByClass(USpringArmComponent::StaticClass()));
 
 	if (SpringArmComponent == nullptr) 	GEngine->AddOnScreenDebugMessage
 	(
@@ -41,6 +39,15 @@ void APlayerVessel::BeginPlay()
 	FColor::Red,
 	"no SPRINARM !"
 	);
+
+	MainCamera->bv
+}
+
+// Called when the game starts or when spawned
+void APlayerVessel::BeginPlay()
+{
+	Super::BeginPlay();
+	
 }
 
 
@@ -50,7 +57,7 @@ void APlayerVessel::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	//SetActorRotation(MainCamera->GetRelativeRotation());
+	SetActorRotation(MainCamera->GetRelativeRotation());
 }
 #pragma region InputMappingContext
 
