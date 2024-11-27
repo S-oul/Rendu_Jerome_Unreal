@@ -25,6 +25,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	float AdvancementMax = 0;
 
+	FVector DirectionVector;
+
+	FVector OldLocation;
 
 protected:
 	const FString MainSplineTag = "MainSpline";

@@ -35,6 +35,8 @@ void USplineFollower::AddAdvancement(float DeltaTime)
 
 void USplineFollower::MoveActorToSplinePosition()
 {
+	OldLocation = OwnerActor->GetActorLocation();
+	
 	FVector NewPosition = Spline->GetLocationAtDistanceAlongSpline(AdvancementValue,ESplineCoordinateSpace::World);
 
 	OwnerActor->SetActorLocation(NewPosition);
@@ -42,8 +44,10 @@ void USplineFollower::MoveActorToSplinePosition()
 
 void USplineFollower::RotateActorTowardDirection()
 {
-	///horrible code a refactor;
-	FVector ForwardDir = Spline->GetLocationAtDistanceAlongSpline(AdvancementValue,ESplineCoordinateSpace::World) - Spline->GetLocationAtDistanceAlongSpline(AdvancementValue-1,ESplineCoordinateSpace::World);
+	FVector ForwardDir = OwnerActor->GetActorLocation() - OldLocation;
+	ForwardDir.Normalize();
+	DirectionVector = ForwardDir;
+	
 	FRotator NewRotation = FRotationMatrix::MakeFromX(ForwardDir).Rotator();
 	
 	OwnerActor->SetActorRotation(NewRotation);
@@ -65,13 +69,6 @@ void USplineFollower::InitDefaultSpline(const FString SplineTag)
 {
 	TArray<AActor*> AllActor;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), *SplineTag, AllActor);
-	GEngine->AddOnScreenDebugMessage
-			(
-			-1,
-			10.f,
-			FColor::Purple,
-			FString::FromInt(AllActor.Num())
-			);
 
 	Spline = AllActor.Num() > 0 ? AllActor[0]->GetComponentByClass<USplineComponent>() : nullptr;
 	if(Spline == nullptr)
