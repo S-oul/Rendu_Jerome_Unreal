@@ -37,6 +37,8 @@ void USplineFollower::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	MoveActorToSplinePosition();
 	RotateActorTowardDirection();
 
+	SetCameraLocation();
+
 }
 
 void USplineFollower::AddAdvancement(float DeltaTime)
@@ -54,6 +56,11 @@ void USplineFollower::MoveActorToSplinePosition()
 	OwnerActor->SetActorLocation(NewPosition);
 }
 
+void USplineFollower::AddPlayerInputOffset(FVector2D PlayerInputOffset)
+{
+	
+}
+
 void USplineFollower::RotateActorTowardDirection()
 {
 	FVector ForwardDir = OldLocation- OwnerActor->GetActorLocation();
@@ -69,16 +76,8 @@ void USplineFollower::SetCameraLocation()
 {
 	if(MainCamera == nullptr) return;
 	
-	MainCamera->SetWorldLocation(OwnerActor->GetActorLocation() - DirectionVector * CameraSetDistance);
+	MainCamera->SetWorldLocation(OwnerActor->GetActorLocation() - DirectionVector * CameraSetXDistance + FVector::UpVector * CameraSetYDistance);
 	MainCamera->SetWorldRotation(OwnerActor->GetActorRotation());
-	
-	GEngine->AddOnScreenDebugMessage
-	(
-	-1,
-	10.f,
-	FColor::Green,
-	FString::FromInt(MainCamera->GetRelativeLocation().X) 
-	 );
 } 
 
 void USplineFollower::InitDefaultSpline(const FString SplineTag)

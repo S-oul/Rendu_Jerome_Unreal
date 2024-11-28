@@ -5,12 +5,9 @@
 #include "CoreMinimal.h"
 #include "InputMappingContext.h"
 #include "InputAction.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "SplineFollower.h"
 #include "GameFramework/Pawn.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 
 #include "PlayerVessel.generated.h"
 
@@ -66,6 +63,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	FVector2D MaxXYDistance;
 
+private:
+	USplineFollower* SplineFollower;
 
 #pragma endregion
 };

@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Chaos/ChaosPerfTest.h"
 #include "GameFramework/SpringArmComponent.h"
 
 
@@ -19,6 +20,27 @@ APlayerVessel::APlayerVessel()
 void APlayerVessel::BeginPlay()
 {
 	Super::BeginPlay();
+	SplineFollower = Cast<USplineFollower>(GetComponentByClass(USplineFollower::StaticClass()));
+
+	if(SplineFollower == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	2,
+	FColor::Red,
+	"NOSPLINEFOLLO"
+	);
+		return;
+	}
+	
+	GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	2,
+	FColor::Purple,
+	SplineFollower->GetName()
+	);
 	
 }
 
@@ -34,6 +56,10 @@ void APlayerVessel::Tick(float DeltaTime)
 	FColor::Yellow,
 	FString::Printf(TEXT("X: %f Y: %f"), PositionOffset.X,PositionOffset.Y)
 	);
+
+	SplineFollower->AddPlayerInputOffset(PositionOffset);
+
+	
 }
 #pragma region InputMappingContext
 

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerVessel.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ActorComponent.h"
 #include "Components/SplineComponent.h"
@@ -28,7 +27,9 @@ public:
 	float AdvancementMax = 0;
 	
 	UPROPERTY(EditAnywhere)
-	float CameraSetDistance = 100.f;
+	float CameraSetXDistance = 100.f;
+	UPROPERTY(EditAnywhere)
+	float CameraSetYDistance = 100.f;
 
 	//Use this for the plane of the player
 	FVector DirectionVector;
@@ -40,8 +41,6 @@ protected:
 
 	AActor* OwnerActor;
 
-	APlayerVessel* PlayerVessel;
-	
 	UCameraComponent* MainCamera;
 	
 	// Called when the game starts
@@ -50,6 +49,7 @@ protected:
 	void AddAdvancement(float DeltaTime);
 
 	void MoveActorToSplinePosition();
+	
 
 	void RotateActorTowardDirection();
 	
@@ -60,8 +60,9 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
+	void AddPlayerInputOffset(FVector2D PlayerInputOffset);
+protected:
 	void InitDefaultSpline(const FString SplineTag);
-
 };
 
