@@ -102,7 +102,7 @@ void USplineFollower::InitDefaultSpline(const FString SplineTag)
 	AdvancementMax = Spline->GetSplineLength();
 
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "MainCamera", AllActor);
-	MainCamera = AllActor.Num() > 0 ? AllActor[1]->GetComponentByClass<UCameraComponent>() : nullptr;
+	MainCamera = AllActor.Num() > 0 ? AllActor[0]->GetComponentByClass<UCameraComponent>() : nullptr;
 
 	if(MainCamera == nullptr)
 	{
@@ -121,7 +121,7 @@ void USplineFollower::InitDefaultSpline(const FString SplineTag)
 	-1,
 	10.f,
 	FColor::Green,
-	Spline->GetName() + " " + FString::FromInt(AdvancementMax) + " \n" + MainCamera->GetOwner()->GetName() 
+	Spline->GetName() + " " + FString::FromInt(AdvancementMax) + " \n" + MainCamera->GetName() 
  	);
 }
 
