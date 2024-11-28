@@ -60,14 +60,10 @@ private:
 public:
 	UPROPERTY(EditAnywhere)
 	float MovementSpeed;
-	
-	UPROPERTY(EditAnywhere)
-	UCameraComponent* MainCamera;
+
+	FVector2D PositionOffset;
 
 	UPROPERTY(EditAnywhere)
-	USpringArmComponent* SpringArmComponent;
-
-	//may change later
 	FVector2D MaxXYDistance;
 
 

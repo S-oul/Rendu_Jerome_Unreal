@@ -52,6 +52,8 @@ protected:
 	void MoveActorToSplinePosition();
 
 	void RotateActorTowardDirection();
+	
+	void SetCameraLocation();
 
 	USplineComponent* Spline;
 

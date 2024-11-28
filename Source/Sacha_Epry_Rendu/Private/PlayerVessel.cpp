@@ -13,32 +13,6 @@ APlayerVessel::APlayerVessel()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	//INIT
-	// Create and initialize the spring arm
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArmComponent->SetupAttachment(RootComponent); // Attach to root
-
-	// Create and initialize the camera
-	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCamera"));
-	MainCamera->SetupAttachment(SpringArmComponent); // Attach to spring arm
-	
-	if (MainCamera == nullptr) 	GEngine->AddOnScreenDebugMessage
-	(
-	-1,
-	10.f,
-	FColor::Red,
-	"no MAIN CAM !"
-	);
-
-
-	if (SpringArmComponent == nullptr) 	GEngine->AddOnScreenDebugMessage
-	(
-	-1,
-	10.f,
-	FColor::Red,
-	"no SPRINARM !"
-	);
 }
 
 // Called when the game starts or when spawned
@@ -53,9 +27,13 @@ void APlayerVessel::BeginPlay()
 void APlayerVessel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
-	SetActorRotation(MainCamera->GetRelativeRotation());
+	GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	DeltaTime,
+	FColor::Yellow,
+	FString::Printf(TEXT("X: %f Y: %f"), PositionOffset.X,PositionOffset.Y)
+	);
 }
 #pragma region InputMappingContext
 
@@ -73,8 +51,6 @@ void APlayerVessel::SetupMappingContextIntoController() const
 	);
 		return;
 	}
-	PlayerController->Possess(this.);
-	PlayerController->SetViewTargetWithBlend(MainCamera->GetOwner(),0);
 
 	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
 	if (LocalPlayer == nullptr) {
@@ -167,29 +143,20 @@ void APlayerVessel::OnXMove(const FInputActionValue& InputActionValue)
 {
 
 	float Movement = InputActionValue.Get<float>();
-
-	GEngine->AddOnScreenDebugMessage
-	(
-	-1,
-	2.1f,
-	FColor::Yellow,
-    FString::Printf(TEXT("X: %f"), Movement)
-	);
 	
+	PositionOffset.X += Movement;
+
+	PositionOffset.X = FMath::Clamp(PositionOffset.X,0,MaxXYDistance.X);
 }
 
 void APlayerVessel::OnYMove(const FInputActionValue& InputActionValue)
 {
 	float Movement = InputActionValue.Get<float>();
 
-	GEngine->AddOnScreenDebugMessage
-	(
-	-1,
-	2.1f,
-	FColor::Yellow,
-	FString::Printf(TEXT("Y: %f"), Movement)
-	);
-	
+	PositionOffset.Y += Movement;
+
+	PositionOffset.Y = FMath::Clamp(PositionOffset.Y,0,MaxXYDistance.Y);
+
 }
 
 #pragma endregion
