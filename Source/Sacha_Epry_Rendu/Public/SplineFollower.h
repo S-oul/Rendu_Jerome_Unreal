@@ -56,10 +56,13 @@ protected:
 	
 	void AddPlayerInputOffset();
 
+	UPROPERTY()
 	USplineComponent* Spline;
 
+	UPROPERTY()
 	TArray<UArrowComponent*> Arrows;
 
+	UPROPERTY()
 	UStaticMeshComponent* ShipMesh;
 	
 	FVector2D PlayerInputOffset;

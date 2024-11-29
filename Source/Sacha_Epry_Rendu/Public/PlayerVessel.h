@@ -64,6 +64,7 @@ public:
 	FVector2D MaxXYDistance;
 
 private:
+	UPROPERTY()
 	USplineFollower* SplineFollower;
 
 #pragma endregion
