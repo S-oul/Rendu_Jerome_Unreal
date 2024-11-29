@@ -2,9 +2,7 @@
 
 
 #include "Sacha_Epry_Rendu/Public/SplineFollower.h"
-
 #include "Kismet/GameplayStatics.h"
-#include "Misc/MapErrors.h"
 
 
 // Sets default values for this component's properties
@@ -17,6 +15,7 @@ USplineFollower::USplineFollower()
 	// ...
 }
 
+	FRotator ShipRotation;
 
 // Called when the game starts
 void USplineFollower::BeginPlay()
@@ -29,6 +28,9 @@ void USplineFollower::BeginPlay()
 
 	XMoveHeatValue = 0;
 	YMoveHeatValue = 0;
+
+	ShipRotation = ShipMesh->GetRelativeRotation();
+
 }
 
 // Called every frame
@@ -80,18 +82,19 @@ void USplineFollower::AddPlayerInputOffset()
 
 void USplineFollower::RotatePlayerByInputOffset(float DeltaTime)
 {
-	GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Purple, 
-		FString::Printf(TEXT("Before: X: %f Y: %f"), XMoveHeatValue, YMoveHeatValue));
+	if (FMath::Abs(XMoveHeatValue) < .8f) XMoveHeatValue = 0;
+	if (FMath::Abs(YMoveHeatValue) < .8f) YMoveHeatValue = 0;
+	 
+	if (XMoveHeatValue != 0) XMoveHeatValue += FMath::Sign(XMoveHeatValue) * -.8f;
+	if (YMoveHeatValue != 0) YMoveHeatValue += FMath::Sign(YMoveHeatValue) * -.8f;
+
+	YMoveHeatValue = FMath::Clamp(YMoveHeatValue, -10, 10);
+	XMoveHeatValue = FMath::Clamp(XMoveHeatValue, -10, 10);
 	
-    if(XMoveHeatValue != 0)	FMath::Sign(XMoveHeatValue)? XMoveHeatValue++ : XMoveHeatValue--; 
-	if(YMoveHeatValue != 0)	FMath::Sign(YMoveHeatValue)? YMoveHeatValue++ : YMoveHeatValue--; 
- 
-    
 	GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Yellow, 
 		FString::Printf(TEXT("After: X: %f Y: %f"), XMoveHeatValue, YMoveHeatValue));
-
-	FRotator ShipRotation = ShipMesh->GetRelativeRotation();
-	ShipMesh->SetRelativeRotation(FRotator(ShipRotation.Pitch + YMoveHeatValue, ShipRotation.Yaw, ShipRotation.Roll + XMoveHeatValue));
+	
+	ShipMesh->SetRelativeRotation(FRotator(ShipRotation.Pitch, ShipRotation.Yaw + XMoveHeatValue * 4, ShipRotation.Roll + YMoveHeatValue * 4));
 }
 
 void USplineFollower::RotateActorTowardDirection()
@@ -116,9 +119,8 @@ void USplineFollower::SetCameraLocation()
 void USplineFollower::SetPlayerInputOffset(const FVector2D InputOffset, float HeatXMove, float HeatYMove)
 {
 	PlayerInputOffset = InputOffset;
-	if(HeatXMove != 0) FMath::Sign(HeatXMove)? XMoveHeatValue -= XMoveHeatValue/10 : XMoveHeatValue+= XMoveHeatValue/10; 
-	if(HeatYMove != 0)	FMath::Sign(HeatYMove)? YMoveHeatValue -= YMoveHeatValue/10 : YMoveHeatValue += YMoveHeatValue/10; 
-
+	XMoveHeatValue += HeatXMove; 
+	YMoveHeatValue += HeatYMove; 
 }
 
 void USplineFollower::InitSplineFollower(const FString SplineTag)

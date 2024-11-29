@@ -4,9 +4,6 @@
 #include "Sacha_Epry_Rendu/Public/PlayerVessel.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Camera/CameraComponent.h"
-#include "Chaos/ChaosPerfTest.h"
-#include "GameFramework/SpringArmComponent.h"
 
 
 // Sets default values
@@ -31,7 +28,7 @@ void APlayerVessel::BeginPlay()
 		-1,
 		2,
 		FColor::Red,
-		"NOSPLINEFOLLO"
+		"NO SPLINE FOLLOWER"
 		);
 		return;
 	}
@@ -52,6 +49,8 @@ void APlayerVessel::Tick(float DeltaTime)
 	);
 
 	SplineFollowerComponent->SetPlayerInputOffset(PositionOffset, XMoveHeat, YMoveHeat);
+	XMoveHeat = 0;
+	YMoveHeat = 0;
 
 	
 }
@@ -164,24 +163,20 @@ void APlayerVessel::OnXMove(const FInputActionValue& InputActionValue)
 
 	float Movement = InputActionValue.Get<float>();
 
-	XMoveHeat += Movement;
-	XMoveHeat = FMath::Clamp(XMoveHeat,-10,10);
+	XMoveHeat = Movement;
 
 	PositionOffset.X += Movement * MovementSpeed;
 	PositionOffset.X = FMath::Clamp(PositionOffset.X,-MaxXYDistance.X,MaxXYDistance.X);
-	
 }
 
 void APlayerVessel::OnYMove(const FInputActionValue& InputActionValue)
 {
 	float Movement = InputActionValue.Get<float>();
 
-	YMoveHeat += Movement;
-	YMoveHeat = FMath::Clamp(YMoveHeat,-10,10);
+	YMoveHeat = Movement;
 	
 	PositionOffset.Y += Movement * MovementSpeed;
 	PositionOffset.Y = FMath::Clamp(PositionOffset.Y,-MaxXYDistance.Y,MaxXYDistance.Y);
-
 }
 
 #pragma endregion
