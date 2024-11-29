@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ActorComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Components/SplineComponent.h"
 #include "SplineFollower.generated.h"
 
@@ -49,20 +50,27 @@ protected:
 	void AddAdvancement(float DeltaTime);
 
 	void MoveActorToSplinePosition();
-	
-
 	void RotateActorTowardDirection();
 	
 	void SetCameraLocation();
+	
+	void AddPlayerInputOffset();
 
 	USplineComponent* Spline;
 
+	TArray<UArrowComponent*> Arrows;
+
+	UStaticMeshComponent* ShipMesh;
+	
+	FVector2D PlayerInputOffset;
+
+	
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	void AddPlayerInputOffset(FVector2D PlayerInputOffset);
+	void SetPlayerInputOffset(FVector2D InputOffset);
 protected:
-	void InitDefaultSpline(const FString SplineTag);
+	void InitSplineFollower(const FString SplineTag);
 };
 

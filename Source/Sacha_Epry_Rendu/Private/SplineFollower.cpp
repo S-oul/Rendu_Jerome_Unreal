@@ -4,6 +4,7 @@
 #include "Sacha_Epry_Rendu/Public/SplineFollower.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Misc/MapErrors.h"
 
 
 // Sets default values for this component's properties
@@ -24,7 +25,7 @@ void USplineFollower::BeginPlay()
 
 	OwnerActor = GetOwner();
 	
-	InitDefaultSpline(MainSplineTag);
+	InitSplineFollower(MainSplineTag);
 }
 
 // Called every frame
@@ -39,6 +40,8 @@ void USplineFollower::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	SetCameraLocation();
 
+	AddPlayerInputOffset();
+	
 }
 
 void USplineFollower::AddAdvancement(float DeltaTime)
@@ -56,14 +59,15 @@ void USplineFollower::MoveActorToSplinePosition()
 	OwnerActor->SetActorLocation(NewPosition);
 }
 
-void USplineFollower::AddPlayerInputOffset(FVector2D PlayerInputOffset)
+void USplineFollower::AddPlayerInputOffset()
 {
-	
+	FVector OffsetToV3 = FVector(0,PlayerInputOffset.X,PlayerInputOffset.Y);
+	ShipMesh->SetRelativeLocation(OffsetToV3);
 }
 
 void USplineFollower::RotateActorTowardDirection()
 {
-	FVector ForwardDir = OldLocation- OwnerActor->GetActorLocation();
+	FVector ForwardDir =  OwnerActor->GetActorLocation() - OldLocation ;
 	ForwardDir.Normalize();
 	DirectionVector = ForwardDir;
 	
@@ -80,7 +84,12 @@ void USplineFollower::SetCameraLocation()
 	MainCamera->SetWorldRotation(OwnerActor->GetActorRotation());
 } 
 
-void USplineFollower::InitDefaultSpline(const FString SplineTag)
+void USplineFollower::SetPlayerInputOffset(const FVector2D InputOffset)
+{
+	PlayerInputOffset = InputOffset;
+}
+
+void USplineFollower::InitSplineFollower(const FString SplineTag)
 {
 	TArray<AActor*> AllActor;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), *SplineTag, AllActor);
@@ -115,12 +124,40 @@ void USplineFollower::InitDefaultSpline(const FString SplineTag)
 		return;
 	}
 
+	OwnerActor->GetComponents<UArrowComponent>(Arrows);
+	if(Arrows.Num() == 0)
+	{
+		GEngine->AddOnScreenDebugMessage
+		(
+		-1,
+		10.f,
+		FColor::Red,
+		"No Arrows Found !"
+		);
+		return;
+	}
+
+	TArray<UStaticMeshComponent*> Allmesh;
+	OwnerActor->GetComponents<UStaticMeshComponent>(Allmesh);
+	if(Allmesh.Num() == 0)
+	{
+		GEngine->AddOnScreenDebugMessage
+		(
+		-1,
+		10.f,
+		FColor::Red,
+		"No Mesh Found !"
+		);
+		return;
+	}
+	ShipMesh = Allmesh[0];
+
 	GEngine->AddOnScreenDebugMessage
 	(
 	-1,
 	10.f,
 	FColor::Green,
 	Spline->GetName() + " " + FString::FromInt(AdvancementMax) + " \n" + MainCamera->GetName() 
- 	);
+	 );
 }
 
