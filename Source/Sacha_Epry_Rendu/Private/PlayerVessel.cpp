@@ -20,9 +20,9 @@ APlayerVessel::APlayerVessel()
 void APlayerVessel::BeginPlay()
 {
 	Super::BeginPlay();
-	SplineFollower = Cast<USplineFollower>(GetComponentByClass(USplineFollower::StaticClass()));
+	SplineFollowerComponent = Cast<USplineFollower>(GetComponentByClass(USplineFollower::StaticClass()));
 	PositionOffset = FVector2D(MaxXYDistance/2);
-	if(SplineFollower == nullptr)
+	if(SplineFollowerComponent == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage
 		(
@@ -49,7 +49,7 @@ void APlayerVessel::Tick(float DeltaTime)
 	FString::Printf(TEXT("X: %f Y: %f"), PositionOffset.X,PositionOffset.Y)
 	);
 
-	SplineFollower->SetPlayerInputOffset(PositionOffset);
+	SplineFollowerComponent->SetPlayerInputOffset(PositionOffset);
 
 	
 }

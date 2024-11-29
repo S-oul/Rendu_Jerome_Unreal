@@ -65,7 +65,7 @@ public:
 
 private:
 	UPROPERTY()
-	USplineFollower* SplineFollower;
+	USplineFollower* SplineFollowerComponent;
 
 #pragma endregion
 };
