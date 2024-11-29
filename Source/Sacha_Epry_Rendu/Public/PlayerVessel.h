@@ -59,7 +59,10 @@ public:
 	float MovementSpeed;
 
 	FVector2D PositionOffset;
+	float XMoveHeat;
+	float YMoveHeat;
 
+	
 	UPROPERTY(EditAnywhere)
 	FVector2D MaxXYDistance;
 

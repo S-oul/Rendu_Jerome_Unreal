@@ -11,6 +11,6 @@ void AStarFoxGameMode::BeginPlay()
 	-1,
 	10.f,
 	FColor::Purple,
-	"GameMode " + this->GetName()
+	"GameMode " 
 	);
 }

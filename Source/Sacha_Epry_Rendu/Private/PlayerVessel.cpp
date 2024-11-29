@@ -20,8 +20,10 @@ APlayerVessel::APlayerVessel()
 void APlayerVessel::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PositionOffset = FVector2D(0);
+	
 	SplineFollowerComponent = Cast<USplineFollower>(GetComponentByClass(USplineFollower::StaticClass()));
-	PositionOffset = FVector2D(MaxXYDistance/2);
 	if(SplineFollowerComponent == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage
@@ -49,7 +51,7 @@ void APlayerVessel::Tick(float DeltaTime)
 	FString::Printf(TEXT("X: %f Y: %f"), PositionOffset.X,PositionOffset.Y)
 	);
 
-	SplineFollowerComponent->SetPlayerInputOffset(PositionOffset);
+	SplineFollowerComponent->SetPlayerInputOffset(PositionOffset, XMoveHeat, YMoveHeat);
 
 	
 }
@@ -161,18 +163,23 @@ void APlayerVessel::OnXMove(const FInputActionValue& InputActionValue)
 {
 
 	float Movement = InputActionValue.Get<float>();
-	
-	PositionOffset.X += Movement * MovementSpeed;
 
+	XMoveHeat += Movement;
+	XMoveHeat = FMath::Clamp(XMoveHeat,-10,10);
+
+	PositionOffset.X += Movement * MovementSpeed;
 	PositionOffset.X = FMath::Clamp(PositionOffset.X,-MaxXYDistance.X,MaxXYDistance.X);
+	
 }
 
 void APlayerVessel::OnYMove(const FInputActionValue& InputActionValue)
 {
 	float Movement = InputActionValue.Get<float>();
 
+	YMoveHeat += Movement;
+	YMoveHeat = FMath::Clamp(YMoveHeat,-10,10);
+	
 	PositionOffset.Y += Movement * MovementSpeed;
-
 	PositionOffset.Y = FMath::Clamp(PositionOffset.Y,-MaxXYDistance.Y,MaxXYDistance.Y);
 
 }

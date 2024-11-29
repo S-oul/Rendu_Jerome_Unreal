@@ -33,10 +33,17 @@ public:
 	float CameraSetYDistance = 100.f;
 
 	//Use this for the plane of the player
+
+
+private:
 	FVector DirectionVector;
 
 	FVector OldLocation;
 
+	float XMoveHeatValue;
+	float YMoveHeatValue;
+
+	
 protected:
 	const FString MainSplineTag = "MainSpline";
 
@@ -56,6 +63,8 @@ protected:
 	
 	void AddPlayerInputOffset();
 
+	void RotatePlayerByInputOffset(float DeltaTime);
+
 	UPROPERTY()
 	USplineComponent* Spline;
 
@@ -72,7 +81,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	void SetPlayerInputOffset(FVector2D InputOffset);
+	void SetPlayerInputOffset(FVector2D InputOffset, float HeatXMove, float HeatYMove);
 protected:
 	void InitSplineFollower(const FString SplineTag);
 };

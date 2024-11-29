@@ -26,11 +26,15 @@ void USplineFollower::BeginPlay()
 	OwnerActor = GetOwner();
 	
 	InitSplineFollower(MainSplineTag);
+
+	XMoveHeatValue = 0;
+	YMoveHeatValue = 0;
 }
 
 // Called every frame
 void USplineFollower::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	AddAdvancement(DeltaTime);
@@ -41,7 +45,16 @@ void USplineFollower::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	SetCameraLocation();
 
 	AddPlayerInputOffset();
+
+	RotatePlayerByInputOffset(DeltaTime);
 	
+	GEngine->AddOnScreenDebugMessage
+	(
+	-1,
+	DeltaTime,
+	FColor::Green,
+	FString::Printf(TEXT("X: %f Y: %f"),XMoveHeatValue ,YMoveHeatValue)
+	 );
 }
 
 void USplineFollower::AddAdvancement(float DeltaTime)
@@ -65,6 +78,22 @@ void USplineFollower::AddPlayerInputOffset()
 	ShipMesh->SetRelativeLocation(OffsetToV3);
 }
 
+void USplineFollower::RotatePlayerByInputOffset(float DeltaTime)
+{
+	GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Purple, 
+		FString::Printf(TEXT("Before: X: %f Y: %f"), XMoveHeatValue, YMoveHeatValue));
+	
+    if(XMoveHeatValue != 0)	FMath::Sign(XMoveHeatValue)? XMoveHeatValue++ : XMoveHeatValue--; 
+	if(YMoveHeatValue != 0)	FMath::Sign(YMoveHeatValue)? YMoveHeatValue++ : YMoveHeatValue--; 
+ 
+    
+	GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Yellow, 
+		FString::Printf(TEXT("After: X: %f Y: %f"), XMoveHeatValue, YMoveHeatValue));
+
+	FRotator ShipRotation = ShipMesh->GetRelativeRotation();
+	ShipMesh->SetRelativeRotation(FRotator(ShipRotation.Pitch + YMoveHeatValue, ShipRotation.Yaw, ShipRotation.Roll + XMoveHeatValue));
+}
+
 void USplineFollower::RotateActorTowardDirection()
 {
 	FVector ForwardDir =  OwnerActor->GetActorLocation() - OldLocation ;
@@ -84,9 +113,12 @@ void USplineFollower::SetCameraLocation()
 	MainCamera->SetWorldRotation(OwnerActor->GetActorRotation());
 } 
 
-void USplineFollower::SetPlayerInputOffset(const FVector2D InputOffset)
+void USplineFollower::SetPlayerInputOffset(const FVector2D InputOffset, float HeatXMove, float HeatYMove)
 {
 	PlayerInputOffset = InputOffset;
+	if(HeatXMove != 0) FMath::Sign(HeatXMove)? XMoveHeatValue -= XMoveHeatValue/10 : XMoveHeatValue+= XMoveHeatValue/10; 
+	if(HeatYMove != 0)	FMath::Sign(HeatYMove)? YMoveHeatValue -= YMoveHeatValue/10 : YMoveHeatValue += YMoveHeatValue/10; 
+
 }
 
 void USplineFollower::InitSplineFollower(const FString SplineTag)
@@ -111,7 +143,6 @@ void USplineFollower::InitSplineFollower(const FString SplineTag)
 
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "MainCamera", AllActor);
 	MainCamera = AllActor.Num() > 0 ? AllActor[0]->GetComponentByClass<UCameraComponent>() : nullptr;
-
 	if(MainCamera == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage
@@ -150,6 +181,7 @@ void USplineFollower::InitSplineFollower(const FString SplineTag)
 		);
 		return;
 	}
+	
 	ShipMesh = Allmesh[0];
 
 	GEngine->AddOnScreenDebugMessage
