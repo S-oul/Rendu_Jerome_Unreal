@@ -2,6 +2,8 @@
 
 
 #include "Sacha_Epry_Rendu/Public/SplineFollower.h"
+
+#include "Interfaces/ITargetDevice.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -85,16 +87,16 @@ void USplineFollower::RotatePlayerByInputOffset(float DeltaTime)
 	if (FMath::Abs(XMoveHeatValue) < .8f) XMoveHeatValue = 0;
 	if (FMath::Abs(YMoveHeatValue) < .8f) YMoveHeatValue = 0;
 	 
-	if (XMoveHeatValue != 0) XMoveHeatValue += FMath::Sign(XMoveHeatValue) * -.8f;
-	if (YMoveHeatValue != 0) YMoveHeatValue += FMath::Sign(YMoveHeatValue) * -.8f;
+	if (XMoveHeatValue != 0) XMoveHeatValue += FMath::Sign(XMoveHeatValue) * -.6f;
+	if (YMoveHeatValue != 0) YMoveHeatValue += FMath::Sign(YMoveHeatValue) * -.6f;
 
-	YMoveHeatValue = FMath::Clamp(YMoveHeatValue, -10, 10);
-	XMoveHeatValue = FMath::Clamp(XMoveHeatValue, -10, 10);
+	YMoveHeatValue = FMath::Clamp(YMoveHeatValue, -2, 2);
+	XMoveHeatValue = FMath::Clamp(XMoveHeatValue, -2, 2);
 	
 	GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Yellow, 
 		FString::Printf(TEXT("After: X: %f Y: %f"), XMoveHeatValue, YMoveHeatValue));
 	
-	ShipMesh->SetRelativeRotation(FRotator(ShipRotation.Pitch, ShipRotation.Yaw + XMoveHeatValue * 4, ShipRotation.Roll + YMoveHeatValue * 4));
+	ShipMesh->SetRelativeRotation(FRotator(ShipRotation.Pitch, ShipRotation.Yaw + XMoveHeatValue * 10, ShipRotation.Roll + YMoveHeatValue * 10));
 }
 
 void USplineFollower::RotateActorTowardDirection()
@@ -193,5 +195,19 @@ void USplineFollower::InitSplineFollower(const FString SplineTag)
 	FColor::Green,
 	Spline->GetName() + " " + FString::FromInt(AdvancementMax) + " \n" + MainCamera->GetName() 
 	 );
+}
+
+//EDITOR
+
+
+void USplineFollower::PrintLengthOfSpline()
+{
+	GEngine->AddOnScreenDebugMessage
+		(
+		-1,
+		10.f,
+		FColor::Red,
+		FString::SanitizeFloat(Spline->GetSplineLength())
+		);
 }
 

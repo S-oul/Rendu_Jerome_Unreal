@@ -82,6 +82,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	void SetPlayerInputOffset(FVector2D InputOffset, float HeatXMove, float HeatYMove);
+
+
+	//EDITOR
+	UFUNCTION(CallInEditor, Category="EditComponent")
+	void PrintLengthOfSpline();
+	
 protected:
 	void InitSplineFollower(const FString SplineTag);
 };

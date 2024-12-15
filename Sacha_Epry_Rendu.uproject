@@ -8,6 +8,11 @@
 			"Name": "Sacha_Epry_Rendu",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "CustomUI",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

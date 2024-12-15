@@ -11,5 +11,11 @@ public class Sacha_Epry_RenduTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
 		ExtraModuleNames.Add("Sacha_Epry_Rendu");
+		RegisterModulesCreatedByRider();
+	}
+
+	private void RegisterModulesCreatedByRider()
+	{
+		ExtraModuleNames.AddRange(new string[] { "CustomUI" });
 	}
 }
