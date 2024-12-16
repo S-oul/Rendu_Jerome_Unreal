@@ -26,7 +26,8 @@ public class CustomUI : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore", 
+                "Sacha_Epry_Rendu"
             }
         );
     }

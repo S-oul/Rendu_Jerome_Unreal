@@ -66,9 +66,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	FVector2D MaxXYDistance;
 
-private:
 	UPROPERTY()
 	USplineFollower* SplineFollowerComponent;
+private:
 
 #pragma endregion
 };
