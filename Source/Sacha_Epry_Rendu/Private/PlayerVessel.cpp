@@ -26,8 +26,8 @@ void APlayerVessel::BeginPlay()
 		GEngine->AddOnScreenDebugMessage
 		(
 		-1,
-		2,
-		FColor::Red,
+		10,
+		FColor::Purple,
 		"NO SPLINE FOLLOWER"
 		);
 		return;

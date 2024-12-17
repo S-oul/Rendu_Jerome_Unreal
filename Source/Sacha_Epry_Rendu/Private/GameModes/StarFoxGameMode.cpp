@@ -7,9 +7,8 @@
 
 void AStarFoxGameMode::BeginPlay()
 {
-	
-	APlayerVessel* SpawnedPawn = GetWorld()->SpawnActor<APlayerVessel>(DefaultPawnClass, FVector::Zero(), FRotator(0, 0, 0));
-	GetWorld()->GetFirstPlayerController()->Possess(SpawnedPawn);
+	Super::BeginPlay();
+	APawn* SpawnedPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	
 	GEngine->AddOnScreenDebugMessage
 	(
@@ -25,11 +24,11 @@ void AStarFoxGameMode::BeginPlay()
 		(
 		-1,
 		10.f,
-		FColor::Red,
-		"PAWN FAILED"
+		FColor::Green,
+		"PAWN Y"
 		);
-		return;
-	}
+	}else return;
+	
 	APlayerVessel* PlayerPawn = Cast<APlayerVessel>(SpawnedPawn);
 	if(PlayerPawn)
 	{
@@ -37,10 +36,14 @@ void AStarFoxGameMode::BeginPlay()
 		(
 		-1,
 		10.f,
-		FColor::Red,
-		"CAST FAILED"
+		FColor::Green,
+		"PLAER CAST YES"
 		);
-		return;
-	}
-	PlayerPawn->SplineFollowerComponent->FollowSpeed = 123;
+	}else return;
+
+	USplineFollower* SplineFollower ;
+	if(!PlayerPawn->SplineFollowerComponent) SplineFollower = Cast<USplineFollower>(PlayerPawn->GetComponentByClass(USplineFollower::StaticClass()));
+	else SplineFollower = PlayerPawn->SplineFollowerComponent;
+	
+	SplineFollower->FollowSpeed = 123;
 }

@@ -18,15 +18,18 @@ public:
     
     void ShutdownModule() override;
 
-    TArray<USplineFollower*> FindSplineFollowers();
+    void FindSplineFollowers();
+
+    UWorld* World;
+    USplineFollower* PlayerSplineFollower;
+
+    void SetSpeedToValue(float value);
 private:
 
     //this is to create The buttons ok
     void RegisterMenuExtensions();
 
 protected:
-    UWorld* World;
-    TArray<USplineFollower*> AllSplineFollowers;
 };
  
 IMPLEMENT_MODULE(FCustomUIModule, CustomUI)
