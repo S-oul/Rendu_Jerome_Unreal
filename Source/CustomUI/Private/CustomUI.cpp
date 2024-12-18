@@ -1,5 +1,6 @@
 ﻿#include "CustomUI.h"
 
+#include "Editor.h"
 #include "PlayerVessel.h"
 #include "SplineFollower.h"
 #include "ToolMenus.h"
@@ -24,9 +25,25 @@ void FCustomUIModule::StartupModule()
 	/// Aled les delegates j'en peux plus
 	FWorldDelegates::OnPostWorldInitialization.AddRaw(this, &FCustomUIModule::OnWorldCreated);
 
+	// Register PIE delegates
+	FEditorDelegates::BeginPIE.AddRaw(this, &FCustomUIModule::OnBeginPIE);
+	FEditorDelegates::EndPIE.AddRaw(this, &FCustomUIModule::OnEndPIE);
 	
-	RegisterMenuExtensions();
+	RegisterMenuExtensions(false);
+
+	
 }
+void FCustomUIModule::OnBeginPIE(const bool bIsSimulating)
+{
+	UE_LOG(LogTemp, Log, TEXT("Begin Play detected in Plugin!"));
+	RegisterMenuExtensions(true);
+}
+void FCustomUIModule::OnEndPIE(bool bIsSimulating)
+{
+	UE_LOG(LogTemp, Log, TEXT("End PIE detected!"));
+	RegisterMenuExtensions(false);
+}
+
 
 void FCustomUIModule::OnWorldCreated(UWorld* NewWorld, const UWorld::InitializationValues  IVS)
 {
@@ -62,13 +79,13 @@ void FCustomUIModule::FindSplineFollowers()
 	
 	APlayerVessel* PlayerVessel = Cast<APlayerVessel>(PlayerActor); // when I try to make shortcut like : this->PlayerSplineFollower = AllActor[0]->FindComponentByClass<USplineFollower>(); it breaks whyyyyyyyyyyyyyyyyyy uneral ?????????????
 
-	if(!PlayerVessel) UE_LOG(LogTemp, Error, TEXT("PlayerVessel is SHIT"))
-	else UE_LOG(LogTemp, Display , TEXT("PlayerVessel is SUCCESS : %s"), *PlayerVessel->GetActorLabel());
+	if(!PlayerVessel) UE_LOG(LogTemp, Error, TEXT("Cast PlayerVessel is failed"))
+	else UE_LOG(LogTemp, Display , TEXT("Cast PlayerVessel is success : %s"), *PlayerVessel->GetActorLabel());
 	
 	USplineFollower* SplineFollower = PlayerVessel->FindComponentByClass<USplineFollower>();
 	
-	if(!SplineFollower) UE_LOG(LogTemp, Error, TEXT("PlayerSplineFollower is ULTIME SHIT"))
-	else UE_LOG(LogTemp, Display , TEXT("PlayerSplineFollower is SUCCESS : %s"), *SplineFollower->GetName());
+	if(!SplineFollower) UE_LOG(LogTemp, Error, TEXT("Cast PlayerSplineFollower is failed"))
+	else UE_LOG(LogTemp, Display , TEXT("Cast PlayerSplineFollower is success : %s"), *SplineFollower->GetName());
 
 	this->PlayerSplineFollower = SplineFollower;	
 }
@@ -77,7 +94,7 @@ void FCustomUIModule::SetSpeedToValue(float value)
 	this->PlayerSplineFollower->FollowSpeed = value;
 	
 }
-void FCustomUIModule::RegisterMenuExtensions()
+void FCustomUIModule::RegisterMenuExtensions(bool ShoudButtonWork)
 {
 	FToolMenuOwnerScoped OwnerScoped(this);
 
@@ -95,24 +112,34 @@ void FCustomUIModule::RegisterMenuExtensions()
 			   INVTEXT("Find SplineFollowers in Current World")
 		   ));
 	
-	ToolbarSection.AddEntry(FToolMenuEntry::InitWidget(
+	FToolMenuEntry Slider = ToolbarSection.AddEntry(FToolMenuEntry::InitWidget(
 		"FloatInputBox",
 		SNew(SNumericEntryBox<float>)
 			.AllowSpin(true)
 			.MinSliderValue(1).MaxSliderValue(500).Value(300)
 			.SliderExponent(.75f)
 			.SupportDynamicSliderMaxValue(true)
+			.IsEnabled_Lambda([ShoudButtonWork]()
+				{
+					return ShoudButtonWork; // le POULET
+				})
 			.Value_Lambda([]() { return 300.f; }) 
-			.OnValueChanged_Lambda([this](float NewValue) { // So fckin far fetched
-				if(!PlayerSplineFollower) // if isnt set
+			.OnValueChanged_Lambda([this](float NewValue) { // So fckin far fetched j'ai mis tellement longtemps à trouver
+				/*if (!GIsPlayInEditorWorld)
 				{
-					this->FindSplineFollowers();
+					UE_LOG(LogTemp, Warning, TEXT("Cannot adjust speed: You must be in Play mode."));
+					return;
+				}*/
+				if (!PlayerSplineFollower)
+				{
+					UE_LOG(LogTemp, Log, TEXT("PlayerSplineFollower not set. Attempt to find spline follower"));
+					FindSplineFollowers();
 				}
-				if(this->PlayerSplineFollower) // if cast failed
+				if (PlayerSplineFollower)
 				{
-					this->SetSpeedToValue(NewValue);
-					UE_LOG(LogTemp, Log, TEXT("New value: %f"), NewValue);
-				}else UE_LOG(LogTemp, Log, TEXT("CAST IS SHIT"));
+					SetSpeedToValue(NewValue);
+					UE_LOG(LogTemp, Log, TEXT("Speed updated successfully. New value: %f"), NewValue);
+				}else UE_LOG(LogTemp, Error, TEXT("Failed to find or cast PlayerSplineFollower. Speed adjustment failed."));
 
 				
 			}),
@@ -121,7 +148,3 @@ void FCustomUIModule::RegisterMenuExtensions()
 		 )
 	);
 }
-
-
-
-

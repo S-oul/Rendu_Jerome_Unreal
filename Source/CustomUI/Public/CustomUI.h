@@ -16,6 +16,7 @@ public:
 
     
     
+    
     void ShutdownModule() override;
 
     void FindSplineFollowers();
@@ -24,10 +25,13 @@ public:
     USplineFollower* PlayerSplineFollower;
 
     void SetSpeedToValue(float value);
+    
 private:
-
+    void OnBeginPIE(const bool bIsSimulating);
+    void OnEndPIE(const bool bIsSimulating);
+    
     //this is to create The buttons ok
-    void RegisterMenuExtensions();
+    void RegisterMenuExtensions(bool ShoudButtonWork);
 
 protected:
 };

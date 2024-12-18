@@ -17,6 +17,8 @@ public class CustomUI : ModuleRules
 			"EnhancedInput",
 			"InputCore",    // Required for EKeys
 			"ToolMenus",    // Required for ToolMenus API
+			"UnrealEd" // Required for FEditorDelegates
+
             }
         );
 
