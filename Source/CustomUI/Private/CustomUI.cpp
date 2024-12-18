@@ -1,4 +1,4 @@
-﻿#include "CustomUI.h"
+#include "CustomUI.h"
 
 #include "Editor.h"
 #include "PlayerVessel.h"
@@ -29,6 +29,9 @@ void FCustomUIModule::StartupModule()
 	
 	RegisterMenuExtensions(false);
 
+	// Register PIE delegates
+	FEditorDelegates::BeginPIE.AddRaw(this, &FCustomUIModule::OnBeginPIE);
+	FEditorDelegates::EndPIE.AddRaw(this, &FCustomUIModule::OnEndPIE);
 	
 }
 void FCustomUIModule::OnBeginPIE(const bool bIsSimulating)

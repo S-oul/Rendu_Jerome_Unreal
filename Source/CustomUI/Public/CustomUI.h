@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Modules/ModuleManager.h"
 #include "Internationalization/Text.h"
