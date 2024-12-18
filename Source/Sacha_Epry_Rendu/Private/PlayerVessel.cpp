@@ -2,8 +2,11 @@
 
 
 #include "Sacha_Epry_Rendu/Public/PlayerVessel.h"
+
+#include "AssetDefinition.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "LaserProjectile.h"
 
 
 // Sets default values
@@ -32,6 +35,22 @@ void APlayerVessel::BeginPlay()
 		);
 		return;
 	}
+
+	TArray<UStaticMeshComponent*> Allmesh;
+	GetComponents<UStaticMeshComponent>(Allmesh);
+	if(Allmesh.Num() == 0)
+	{
+		GEngine->AddOnScreenDebugMessage
+		(
+		-1,
+		10.f,
+		FColor::Red,
+		"No Mesh Found !"
+		);
+		return;
+	}
+	
+	ShipMesh = Allmesh[0];
 	
 }
 
@@ -86,12 +105,12 @@ void APlayerVessel::SetupMappingContextIntoController() const
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
 	if(Subsystem == nullptr) {
 		GEngine->AddOnScreenDebugMessage
-	(
-	-1,
-	10.f,
-	FColor::Red,
-	"no SubSystem!"
-	);
+		(
+		-1,
+		10.f,
+		FColor::Red,
+		"no SubSystem!"
+		);
 		return;
 	}
 	
@@ -126,10 +145,10 @@ void APlayerVessel::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	if(EnhancedInputComponent == nullptr) return;
 	
-	BindInputMoveAxisAndActions(EnhancedInputComponent);
+	BindInputAndActions(EnhancedInputComponent);
 }
 
-void APlayerVessel::BindInputMoveAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent)
+void APlayerVessel::BindInputAndActions(UEnhancedInputComponent* EnhancedInputComponent)
 {
 	if(InputMappingContext == nullptr) return;
 	if(EnhancedInputComponent == nullptr) return;
@@ -154,13 +173,23 @@ void APlayerVessel::BindInputMoveAxisAndActions(UEnhancedInputComponent* Enhance
 			&APlayerVessel::OnYMove
 		);
 	}
+
+	if(ShootAction)
+	{
+		EnhancedInputComponent->BindAction
+		(
+			ShootAction,
+			ETriggerEvent::Started,
+			this,
+			&APlayerVessel::OnShoot
+		);
+	}
 	
 }
 
 
 void APlayerVessel::OnXMove(const FInputActionValue& InputActionValue)
 {
-
 	float Movement = InputActionValue.Get<float>();
 
 	XMoveHeat = Movement;
@@ -177,6 +206,17 @@ void APlayerVessel::OnYMove(const FInputActionValue& InputActionValue)
 	
 	PositionOffset.Y += Movement * MovementSpeed;
 	PositionOffset.Y = FMath::Clamp(PositionOffset.Y,-MaxXYDistance.Y,MaxXYDistance.Y);
+}
+
+void APlayerVessel::OnShoot()
+{
+	FActorSpawnParameters SpawnParameters;
+	FRotator Rotator = FRotator(0,-90,0) - GetActorRotation() - ShipMesh->GetComponentRotation();
+	FVector loc = ShipMesh->GetComponentLocation();	
+	AActor* laser;
+	if(LaserActor) laser = GetWorld()->SpawnActor(LaserActor, &loc, &Rotator, SpawnParameters);
+
+	UE_LOG(LogTemp,Display,TEXT("Laser Shoot"));
 }
 
 #pragma endregion

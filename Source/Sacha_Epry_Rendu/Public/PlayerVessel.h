@@ -7,6 +7,7 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "SplineFollower.h"
+#include "LaserProjectile.h"
 #include "GameFramework/Pawn.h"
 
 #include "PlayerVessel.generated.h"
@@ -38,17 +39,29 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UInputAction* MoveYInputAction;
 
+	UPROPERTY(EditAnywhere)
+	UInputAction* ShootAction;
+
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ALaserProjectile> LaserActor;
+
+	UStaticMeshComponent* ShipMesh;
+
+
 public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	void BindInputMoveAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent);
+	void BindInputAndActions(UEnhancedInputComponent* EnhancedInputComponent);
 	void SetupMappingContextIntoController() const;
 
 	void OnXMove(const FInputActionValue& InputActionValue);
 
 	void OnYMove(const FInputActionValue& InputActionValue);
+
+	void OnShoot();
 
 #pragma endregion
 

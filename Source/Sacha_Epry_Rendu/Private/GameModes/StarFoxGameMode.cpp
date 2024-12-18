@@ -39,11 +39,5 @@ void AStarFoxGameMode::BeginPlay()
 		FColor::Green,
 		"PLAER CAST YES"
 		);
-	}else return;
-
-	USplineFollower* SplineFollower ;
-	if(!PlayerPawn->SplineFollowerComponent) SplineFollower = Cast<USplineFollower>(PlayerPawn->GetComponentByClass(USplineFollower::StaticClass()));
-	else SplineFollower = PlayerPawn->SplineFollowerComponent;
-	
-	SplineFollower->FollowSpeed = 123;
+	}
 }
