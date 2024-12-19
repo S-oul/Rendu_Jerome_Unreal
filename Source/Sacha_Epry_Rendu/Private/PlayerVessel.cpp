@@ -68,9 +68,6 @@ void APlayerVessel::Tick(float DeltaTime)
 	);
 
 	SplineFollowerComponent->SetPlayerInputOffset(PositionOffset, XMoveHeat, YMoveHeat);
-	XMoveHeat = 0;
-	YMoveHeat = 0;
-
 	
 }
 #pragma region InputMappingContext
@@ -162,6 +159,13 @@ void APlayerVessel::BindInputAndActions(UEnhancedInputComponent* EnhancedInputCo
 			this,
 			&APlayerVessel::OnXMove
 		);
+		EnhancedInputComponent->BindAction
+		(
+			MoveXInputAction,
+			ETriggerEvent::Completed,
+			this,
+			&APlayerVessel::OnReleaseX
+		);
 	}
 	if(MoveYInputAction)
 	{
@@ -171,6 +175,13 @@ void APlayerVessel::BindInputAndActions(UEnhancedInputComponent* EnhancedInputCo
 			ETriggerEvent::Triggered,
 			this,
 			&APlayerVessel::OnYMove
+		);
+		EnhancedInputComponent->BindAction
+		(
+			MoveYInputAction,
+			ETriggerEvent::Completed,
+			this,
+			&APlayerVessel::OnReleaseY
 		);
 	}
 
@@ -208,15 +219,31 @@ void APlayerVessel::OnYMove(const FInputActionValue& InputActionValue)
 	PositionOffset.Y = FMath::Clamp(PositionOffset.Y,-MaxXYDistance.Y,MaxXYDistance.Y);
 }
 
+void APlayerVessel::OnReleaseY()
+{
+	YMoveHeat = 0;
+}
+void APlayerVessel::OnReleaseX()
+{
+	XMoveHeat = 0;
+}
+
+
 void APlayerVessel::OnShoot()
 {
-	FActorSpawnParameters SpawnParameters;
-	FRotator Rotator = FRotator(0,-90,0) - GetActorRotation() - ShipMesh->GetComponentRotation();
-	FVector loc = ShipMesh->GetComponentLocation();	
-	AActor* laser;
-	if(LaserActor) laser = GetWorld()->SpawnActor(LaserActor, &loc, &Rotator, SpawnParameters);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow,
+		FString::Printf(TEXT("HeatValues: X: %f Y: %f"), XMoveHeat, YMoveHeat));
 
-	UE_LOG(LogTemp,Display,TEXT("Laser Shoot"));
+	FActorSpawnParameters SpawnParameters;
+
+	
+	FRotator Rotator = this->GetActorForwardVector().Rotation() + FRotator(YMoveHeat*15, XMoveHeat*25, 0);
+	FVector loc = ShipMesh->GetComponentLocation();	
+	if(LaserActor) {
+		AActor* laser = GetWorld()->SpawnActor(LaserActor, &loc, &Rotator, SpawnParameters);
+		UE_LOG(LogTemp,Display,TEXT("Laser Shoot ")); 
+
+	}
 }
 
 #pragma endregion

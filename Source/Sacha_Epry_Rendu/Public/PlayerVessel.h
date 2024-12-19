@@ -60,6 +60,8 @@ private:
 	void OnXMove(const FInputActionValue& InputActionValue);
 
 	void OnYMove(const FInputActionValue& InputActionValue);
+	void OnReleaseY();
+	void OnReleaseX();
 
 	void OnShoot();
 

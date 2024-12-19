@@ -51,14 +51,6 @@ void USplineFollower::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	AddPlayerInputOffset();
 
 	RotatePlayerByInputOffset(DeltaTime);
-	
-	GEngine->AddOnScreenDebugMessage
-	(
-	-1,
-	DeltaTime,
-	FColor::Green,
-	FString::Printf(TEXT("X: %f Y: %f"),XMoveHeatValue ,YMoveHeatValue)
-	 );
 }
 
 void USplineFollower::AddAdvancement(float DeltaTime)
@@ -92,9 +84,6 @@ void USplineFollower::RotatePlayerByInputOffset(float DeltaTime)
 
 	YMoveHeatValue = FMath::Clamp(YMoveHeatValue, -2, 2);
 	XMoveHeatValue = FMath::Clamp(XMoveHeatValue, -2, 2);
-	
-	GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Yellow, 
-		FString::Printf(TEXT("After: X: %f Y: %f"), XMoveHeatValue, YMoveHeatValue));
 	
 	ShipMesh->SetRelativeRotation(FRotator(ShipRotation.Pitch, ShipRotation.Yaw + XMoveHeatValue * 10, ShipRotation.Roll + YMoveHeatValue * 10));
 }
